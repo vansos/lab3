@@ -1,17 +1,63 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import com.google.gson.Gson;
+import java.io.FileReader;
+import java.io.FileNotFoundException;
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        try {
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+            FileReader reader = new FileReader("books.json");
+            Gson gson = new Gson();
+            Person[] visitors = gson.fromJson(reader, Person[].class);
+
+            // Задание 1:
+            List<Person> visitorList = List.of(visitors);
+            System.out.println("Visitors:");
+            visitorList.forEach(System.out::println);
+            System.out.println("Total visitors: " + visitorList.size());
+            System.out.println();
+
+            // Задание 2:
+            Set<Book> uniqueBooks = visitorList.stream()
+                    .flatMap(visitor -> visitor.getFavoriteBooks().stream())
+                    .collect(Collectors.toSet());
+
+            System.out.println("Unique books:");
+            uniqueBooks.forEach(System.out::println);
+            System.out.println("Total unique books: " + uniqueBooks.size());
+            System.out.println();
+
+            // Задание 3:
+            List<Book> sortedBooks = uniqueBooks.stream()
+                    .sorted(Comparator.comparingInt(Book::getPublishingYear))
+                    .toList();
+
+            System.out.println("Books sorted by publishing year:");
+            sortedBooks.forEach(System.out::println);
+            System.out.println();
+
+            // Задание 4:
+            boolean hasBook = visitorList.stream()
+                    .flatMap(visitor -> visitor.getFavoriteBooks().stream())
+                    .anyMatch(book -> "Jane Austen".equals(book.getAuthor()));
+
+            System.out.println("Is there a book by Jane Austen: " + hasBook);
+            System.out.println();
+
+            // Задание 5:
+            int maxFavoriteBooks = visitorList.stream()
+                    .mapToInt(visitor -> visitor.getFavoriteBooks().size())
+                    .max()
+                    .orElse(0);
+
+            System.out.println("Maximum number of favorite books per visitor: " + maxFavoriteBooks);
+
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: File 'books.json' not found.");
         }
     }
 }

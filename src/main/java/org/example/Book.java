@@ -1,4 +1,12 @@
 package org.example;
 
-public class Book {
+import lombok.Data;
+
+@Data
+class Book {
+    String name;
+    String author;
+    int publishingYear;
+    String isbn;
+    String publisher;
 }
